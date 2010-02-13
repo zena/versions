@@ -1,17 +1,24 @@
-= versions
+== Versions
 
-Description goes here.
+A list of libraries to work with ActiveRecord model versioning.
 
-== Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+website: http://zenadmin.org/650
 
-== Copyright
+license: MIT
 
-Copyright (c) 2010 Gaspard Bucher. See LICENSE for details.
+== Auto
+
+Duplicate on save if should_clone? returns true.
+
+== Multi
+
+Hide many versions behind a single current one.
+
+== Transparent
+
+Hide versions from outside world.
+
+== Property
+
+Define properties on model, store them in versions.
+
