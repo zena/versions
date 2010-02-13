@@ -1,7 +1,7 @@
 require 'pathname'
 $LOAD_PATH.unshift((Pathname(__FILE__).dirname +  'lib').expand_path)
 
-require 'versions'
+require 'versions/version'
 require 'rake'
 require 'rake/testtask'
 
@@ -31,16 +31,18 @@ task :default => :test
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gemspec|
+    gemspec.version = Versions::VERSION
     gemspec.name = "versions"
     gemspec.summary = %Q{A list of libraries to work with ActiveRecord model versioning}
     gemspec.description = %Q{A list of libraries to work with ActiveRecord model versioning: Auto (duplicate on save), Multi (hide many versions behind a single one), Transparent (hide versions from outside world), Property (define properties on model, store them in versions)}
     gemspec.email = "gaspard@teti.ch"
     gemspec.homepage = "http://zenadmin.org/650"
     gemspec.authors = ["Gaspard Bucher"]
-    gemspec.add_development_dependency "shoulda", ">= 0"
 
     gemspec.add_development_dependency('shoulda')
+
     gemspec.add_dependency('activerecord')
+    gemspec.add_dependency('property', '>= 0.8.0')
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
