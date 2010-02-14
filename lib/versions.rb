@@ -1,5 +1,5 @@
+require 'active_record'
 require 'versions/shared_attachment'
 require 'versions/auto'
 require 'versions/multi'
-require 'versions/property'
 require 'versions/transparent'
