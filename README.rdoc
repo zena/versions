@@ -18,7 +18,8 @@ Hide many versions behind a single current one.
 
 Hide versions from outside world.
 
-== Property
+== SharedAttachment
 
-Define properties on model, store them in versions.
+Enable file attachments linked to versions. The attachments are shared between versions
+and deleted when no more versions are using them.
 

@@ -1,0 +1,10 @@
+== 0.1.0
+
+* 2 major enhancements
+  * Multi working
+  * tested with properties (Property gem)
+
+== 0.0.1 2010-02-13
+
+* 1 major enhancement
+  * initial release, Auto working

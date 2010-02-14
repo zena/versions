@@ -27,9 +27,9 @@ module Versions
 
       protected
         def module_for_multiple(name, klass, owner_name)
-          methods_module = Module.new
 
           # Eval is ugly, but it's the fastest solution I know of
+          line = __LINE__
           definitions = <<-EOF
             def #{name}                                     # def version
               @#{name} ||= begin                            #   @version ||= begin
@@ -59,19 +59,21 @@ module Versions
               end                                           # end
 
               def save_#{name}_before_update                # def save_version_before_update
-                if !@#{name}.save_with_validation(false)    #   if !@version.save_with_validation(false)
-                  merge_multi_errors('#{name}', @#{name})   #      merge_multi_errors('version', @version)
+                return true if !@#{name}.changed?           #   return true if !@version.changed?
+                if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
+                  merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
+                  false                                     #     false
                 else                                        #   else
                   set_current_#{name}_before_update         #     set_current_version_before_update
+                  true                                      #     true
                 end                                         #   end
-                true                                        #   true
               end                                           # end
                                                             #
               def save_#{name}_after_create                 # def save_version_after_create
                 @#{name}.#{owner_name}_id = self[:id]       #   version.owner_id = self[:id]
-                if !@#{name}.save_with_validation(false)    #   if !@version.save_with_validation(false)
+                if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
-                  rollback!                                 #     rollback!
+                  raise ActiveRecord::RecordInvalid.new(self) #   raise ActiveRecord::RecordInvalid.new(self)
                 else                                        #   else
                   set_current_#{name}_after_create          #     set_current_version_after_create
                 end                                         #   end
@@ -90,17 +92,29 @@ module Versions
               # master record has been created. This method is usually overwriten
               # in the class.
               def set_current_#{name}_after_create          # def set_current_version_after_create
-                update_attribute(:#{name}_id, @#{name}.id)  #   update_attribute(:version_id, @version.id)
+                # raw SQL to skip callbacks and validtions  #
+                conn = self.class.connection                #   conn = self.class.connection
+
+                # conn.execute("UPDATE pages SET \#{conn.quote_column_name("version_id")} = \#{conn.quote(@version.id)} WHERE id = \#{conn.quote(self.id)}")
+                conn.execute(
+                  "UPDATE #{table_name} " +
+                  "SET \#{conn.quote_column_name("#{name}_id")} = \#{conn.quote(@#{name}.id)} " +
+                  "WHERE id = \#{conn.quote(self.id)}"
+                )
+                self[:#{name}_id] = @#{name}.id             #   self[:version_id] = @version.id
+                changed_attributes.clear                    #   changed_attributes.clear
               end                                           # end
           EOF
-          methods_module.class_eval(definitions, __FILE__, __LINE__)
+
+          methods_module = Module.new
+          methods_module.class_eval(definitions, __FILE__, line + 1)
           methods_module
         end # module_for_multiple
     end # ClassMethods
 
     private
 
-      def merge_multi_errors(model, name)
+      def merge_multi_errors(name, model)
         model.errors.each_error do |attribute, message|
           attribute = "#{name}_#{attribute}"
           errors.add(attribute, message) unless errors[attribute] # FIXME: rails 3: if errors[attribute].empty?

@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{versions}
-  s.version = "0.0.1"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Gaspard Bucher"]
-  s.date = %q{2010-02-13}
+  s.date = %q{2010-02-14}
   s.description = %q{A list of libraries to work with ActiveRecord model versioning: Auto (duplicate on save), Multi (hide many versions behind a single one), Transparent (hide versions from outside world), Property (define properties on model, store them in versions)}
   s.email = %q{gaspard@teti.ch}
   s.extra_rdoc_files = [
@@ -19,23 +19,27 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "History.txt",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
      "lib/versions.rb",
      "lib/versions/auto.rb",
+     "lib/versions/destroy.rb",
      "lib/versions/multi.rb",
-     "lib/versions/property.rb",
      "lib/versions/shared_attachment.rb",
      "lib/versions/shared_attachment/attachment.rb",
      "lib/versions/shared_attachment/owner.rb",
      "lib/versions/transparent.rb",
+     "lib/versions/version.rb",
      "test/fixtures.rb",
      "test/helper.rb",
      "test/unit/attachment_test.rb",
      "test/unit/auto_test.rb",
      "test/unit/multi_test.rb",
-     "test/unit/transparent_test.rb"
+     "test/unit/property_test.rb",
+     "test/unit/transparent_test.rb",
+     "versions.gemspec"
   ]
   s.homepage = %q{http://zenadmin.org/650}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -48,6 +52,7 @@ Gem::Specification.new do |s|
      "test/unit/attachment_test.rb",
      "test/unit/auto_test.rb",
      "test/unit/multi_test.rb",
+     "test/unit/property_test.rb",
      "test/unit/transparent_test.rb"
   ]
 
@@ -57,20 +62,17 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<shoulda>, [">= 0"])
-      s.add_development_dependency(%q<shoulda>, [">= 0"])
+      s.add_development_dependency(%q<property>, [">= 0.8.1"])
       s.add_runtime_dependency(%q<activerecord>, [">= 0"])
-      s.add_runtime_dependency(%q<property>, [">= 0.8.0"])
     else
       s.add_dependency(%q<shoulda>, [">= 0"])
-      s.add_dependency(%q<shoulda>, [">= 0"])
+      s.add_dependency(%q<property>, [">= 0.8.1"])
       s.add_dependency(%q<activerecord>, [">= 0"])
-      s.add_dependency(%q<property>, [">= 0.8.0"])
     end
   else
     s.add_dependency(%q<shoulda>, [">= 0"])
-    s.add_dependency(%q<shoulda>, [">= 0"])
+    s.add_dependency(%q<property>, [">= 0.8.1"])
     s.add_dependency(%q<activerecord>, [">= 0"])
-    s.add_dependency(%q<property>, [">= 0.8.0"])
   end
 end
 
