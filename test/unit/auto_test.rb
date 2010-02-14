@@ -3,8 +3,8 @@ require 'helper'
 class AutoTest < Test::Unit::TestCase
 
   class BadVersion < ActiveRecord::Base
-    include Versions::Auto
     set_table_name :versions
+    include Versions::Auto
   end
 
   class Version < ActiveRecord::Base
@@ -39,6 +39,10 @@ class AutoTest < Test::Unit::TestCase
         @version = Version.create('title' => 'Socrate')
       end
 
+      should 'start number at 1' do
+        assert_equal 1, subject.number
+      end
+
       context 'returning false' do
         should 'update record if should_clone is false' do
           assert_difference('Version.count', 0) do
@@ -55,6 +59,10 @@ class AutoTest < Test::Unit::TestCase
         should 'return false on cloned?' do
           subject.update_attributes('title' => 'Aristotle')
           assert !subject.cloned?
+        end
+
+        should 'not increase version number' do
+          assert_equal 1, subject.number
         end
       end
 
@@ -78,6 +86,14 @@ class AutoTest < Test::Unit::TestCase
         should 'return true on cloned?' do
           subject.update_attributes('title' => 'Aristotle')
           assert subject.cloned?
+        end
+
+        should 'increase number on each clone' do
+          subject.update_attributes('title' => 'Aristotle')
+          assert_equal 2, subject.number
+
+          subject.update_attributes('title' => 'Aristotle')
+          assert_equal 3, subject.number
         end
       end
     end

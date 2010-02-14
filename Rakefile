@@ -15,7 +15,7 @@ begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |test|
     test.libs << 'test' << 'lib'
-    test.pattern = 'test/**/auto_test.rb'
+    test.pattern = 'test/**/**_test.rb'
     test.verbose = true
     test.rcov_opts = ['-T', '--exclude-only', '"test\/,^\/"']
   end
