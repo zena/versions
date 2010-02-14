@@ -6,19 +6,39 @@ website: http://zenadmin.org/650
 
 license: MIT
 
-== Auto
+== Auto (status: beta)
 
 Duplicate on save if should_clone? returns true.
 
-== Multi
+== Multi (status: beta)
 
 Hide many versions behind a single current one.
 
-== Transparent
+== Transparent (status: alpha)
 
-Hide versions from outside world.
+Hide versions from outside world (simulate read/writes on the node but
+the actions are done on the version). Uses method_missing to forward
+method calls.
 
-== SharedAttachment
+=== Properties integration (status: beta)
+
+You can get the same functionality as 'Transparent' by using the Property gem and
+storing properties in the version:
+
+  class Contact < ActiveRecord::Base
+    include Versions::Multi
+    has_multiple :versions
+
+    include Property
+    store_properties_in :version
+
+    property do |p|
+      p.string 'first_name', 'name'
+    end
+  end
+
+
+== SharedAttachment (status: alpha)
 
 Enable file attachments linked to versions. The attachments are shared between versions
 and deleted when no more versions are using them.
