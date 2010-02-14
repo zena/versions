@@ -1,4 +1,4 @@
-== 0.1.0
+== 0.1.0 2010-02-14
 
 * 2 major enhancements
   * Multi working
