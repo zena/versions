@@ -12,7 +12,19 @@ Duplicate on save if should_clone? returns true.
 
 == Multi (status: beta)
 
-Hide many versions behind a single current one.
+Hide many versions behind a single current one. For example if you want
+to version the content of a Page class, you should add a 'version_id' in
+the "pages" table to store the current version and you will need a Version
+model with a "page_id" to link back:
+
+  class Version < ActiveRecord::Base
+    include Versions::Auto
+  end
+
+  class Page < ActiveRecord::Base
+    include Versions::Multi
+    has_multiple :versions
+  end
 
 == Transparent (status: alpha)
 
@@ -37,9 +49,37 @@ storing properties in the version:
     end
   end
 
+== AfterCommit
 
-== SharedAttachment (status: alpha)
+Requiring 'versions' adds an 'after_commit' method to your models. The code in the after_commit block
+will only be executed if the top-most transaction succeeds (after the database commit).
+Example:
+
+  class Document < ActiveRecord::Base
+    include Versions::AfterCommit
+    after_save :save_file
+
+    def save_file
+      if @file
+        after_commit do
+          # write file to disk
+        end
+      end
+    end
+  end
+
+== Attachment (status: beta)
 
 Enable file attachments linked to versions. The attachments are shared between versions
-and deleted when no more versions are using them.
+and deleted when no more versions are using them. Example:
+
+
+  # Mock a document class with many versions
+  class Document < ActiveRecord::Base
+    include Versions::Multi
+    has_multiple :versions
+
+    include Versions::Attachment
+    store_attachments_in :version, :attachment_class => 'Attachment'
+  end
 

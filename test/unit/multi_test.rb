@@ -29,9 +29,6 @@ class MultiTest < Test::Unit::TestCase
   class Version < ActiveRecord::Base
     set_table_name :versions
     include Versions::Auto
-    def should_clone?
-      changed?
-    end
   end
   class Page < ActiveRecord::Base
     set_table_name :pages
@@ -82,16 +79,12 @@ class MultiTest < Test::Unit::TestCase
     end
 
     should 'rollback if foo save fails on create' do
+      page = nil
       assert_difference('MultiTest::SimpleVersion.count', 0) do
         assert_difference('MultiTest::SimplePage.count', 0) do
-          assert_raise(ActiveRecord::RecordInvalid) do
-            begin
-              page = SimplePage.create('foo_attributes' => {'title' => 'Fly'})
-            rescue ActiveRecord::RecordInvalid => err
-              assert_equal 'Validation failed: Foo title should not contain letter y', err.message
-              raise
-            end
-          end
+          page = SimplePage.new('foo_attributes' => {'title' => 'Fly'})
+          assert !page.save
+          assert_contains page.errors.full_messages, 'Foo title should not contain letter y'
         end
       end
     end
@@ -106,6 +99,13 @@ class MultiTest < Test::Unit::TestCase
     should 'find owner back using inverse' do
       page = SimplePage.create
       assert_equal page, page.foo.node
+    end
+
+    should 'list foos' do
+      page = SimplePage.create('foo_attributes' => {'title' => 'One'})
+      page.foo = SimpleVersion.new('title' => 'Two')
+      page.save
+      assert_equal 2, page.foos.size
     end
   end
 
@@ -140,6 +140,14 @@ class MultiTest < Test::Unit::TestCase
       assert_difference('Version.count', 0) do
         assert page.update_attributes('version_attributes' => {'title' => 'One'})
       end
+    end
+
+
+    should 'list versions' do
+      page = Page.create('version_attributes' => {'title' => 'One'})
+      assert page.update_attributes('version_attributes' => {'title' => 'Two'})
+      assert page.update_attributes('version_attributes' => {'title' => 'Three'})
+      assert_equal 3, page.versions.size
     end
   end
 end

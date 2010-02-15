@@ -41,6 +41,7 @@ begin
 
     gemspec.add_development_dependency('shoulda')
     gemspec.add_development_dependency('property', '>= 0.8.1')
+    gemspec.add_development_dependency('activesupport')
 
     gemspec.add_dependency('activerecord')
   end

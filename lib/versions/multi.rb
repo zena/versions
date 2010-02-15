@@ -8,32 +8,57 @@ module Versions
 
     module ClassMethods
 
+      # Hide many instances behind a single current one.
+      # === Example
+      # A page with many versions and a current one representing the latest content:
+      # <tt>has_multiple :versions</tt>
+      #
+      # === Supported options
+      # [:class_name]
+      #   Specify the class name of the association. Use it only if that name can't be inferred
+      #   from the association name. So <tt>has_multiple :versions</tt> will by default be linked to the Version class
+      # [:inverse]
+      #   Specify the name of the relation from the associated record back to this record. By default the name
+      #   will be infered from the name of the current class. Note that this setting also defines the default
+      #   the foreign key name.
+      # [:foreign_key]
+      #   Specify the foreign key used for the association. By default this is guessed to be the name of this class
+      #   (or the inverse) in lower-case and "_id" suffixed. So a Person class that makes a +has_multiple+ association will
+      #   use "person_id" as the default <tt>:foreign_key</tt>.
+      # [:local_key]
+      #   Specify the local key to retrieve the current associated record. By default this is guessed from the name of the
+      #   association in lower-case and "_id" suffixed. So a model that <tt>has_multiple :pages</tt> would use "page_id" as
+      #   local key to get the current page. Note that the local key does not need to live in the database if the model
+      #   defines <tt>set_current_[assoc]_before_update</tt> and <tt>set_current_[assoc]_after_create</tt> where '[assoc]'
+      #   represents the association name.
       def has_multiple(versions, options = {})
-        name       = versions.to_s.singularize
-        klass      = (options[:class_name] || name.capitalize).constantize
-        owner_name = options[:inverse] || 'owner'
+        name        = versions.to_s.singularize
+        klass       = (options[:class_name] || name.capitalize).constantize
+        owner_name  = options[:inverse]     || self.to_s.split('::').last.underscore
+        foreign_key = options[:foreign_key] || "#{owner_name}_id"
+        local_key   = options[:local_key]   || "#{name}_id"
 
         raise TypeError.new("Missing 'number' field in table #{klass.table_name}.") unless klass.column_names.include?('number')
-        raise TypeError.new("Missing '#{owner_name}_id' in table #{klass.table_name}.") unless klass.column_names.include?("#{owner_name}_id")
+        raise TypeError.new("Missing '#{foreign_key}' in table #{klass.table_name}.") unless klass.column_names.include?(foreign_key)
 
-        has_many versions, :order => 'number DESC', :dependent => :destroy
+        has_many versions, :order => 'number DESC', :class_name => klass.to_s, :foreign_key => foreign_key, :dependent => :destroy
         validate      :"validate_#{name}"
         after_create  :"save_#{name}_after_create"
         before_update :"save_#{name}_before_update"
 
-        include module_for_multiple(name, klass, owner_name)
+        include module_for_multiple(name, klass, owner_name, foreign_key, local_key)
         klass.belongs_to owner_name, :class_name => self.to_s
       end
 
       protected
-        def module_for_multiple(name, klass, owner_name)
+        def module_for_multiple(name, klass, owner_name, foreign_key, local_key)
 
           # Eval is ugly, but it's the fastest solution I know of
           line = __LINE__
           definitions = <<-EOF
             def #{name}                                     # def version
               @#{name} ||= begin                            #   @version ||= begin
-                if v_id = #{name}_id                        #     if v_id = version_id
+                if v_id = #{local_key}                      #     if v_id = version_id
                   version = ::#{klass}.find(v_id)           #       version = ::Version.find(v_id)
                 else                                        #     else
                   version = ::#{klass}.new                  #       version = ::Version.new
@@ -60,6 +85,7 @@ module Versions
 
               def save_#{name}_before_update                # def save_version_before_update
                 return true if !@#{name}.changed?           #   return true if !@version.changed?
+                @#{name}.#{foreign_key} = self[:id]         #   @version.owner_id = self[:id]
                 if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
                   false                                     #     false
@@ -70,10 +96,12 @@ module Versions
               end                                           # end
                                                             #
               def save_#{name}_after_create                 # def save_version_after_create
-                @#{name}.#{owner_name}_id = self[:id]       #   version.owner_id = self[:id]
-                if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
+                @#{name}.#{foreign_key} = self[:id]         #   version.owner_id = self[:id]
+                if !@#{name}.save(false)                    #   if !@version.save(false)
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
-                  raise ActiveRecord::RecordInvalid.new(self) #   raise ActiveRecord::RecordInvalid.new(self)
+                  self[:id]   = nil
+                  @new_record = true
+                  raise ActiveRecord::Rollback              #   raise ActiveRecord::Rollback
                 else                                        #   else
                   set_current_#{name}_after_create          #     set_current_version_after_create
                 end                                         #   end
@@ -85,7 +113,7 @@ module Versions
               # master record is updated. This method is usually overwritten
               # in the class.
               def set_current_#{name}_before_update         # def set_current_version_before_update
-                self[:#{name}_id] = @#{name}.id             #   self[:version_id] = @version.id
+                self[:#{local_key}] = @#{name}.id           #   self[:version_id] = @version.id
               end                                           # end
 
               # This method is triggered when the version is saved, after the
@@ -97,17 +125,17 @@ module Versions
 
                 # conn.execute("UPDATE pages SET \#{conn.quote_column_name("version_id")} = \#{conn.quote(@version.id)} WHERE id = \#{conn.quote(self.id)}")
                 conn.execute(
-                  "UPDATE #{table_name} " +
-                  "SET \#{conn.quote_column_name("#{name}_id")} = \#{conn.quote(@#{name}.id)} " +
+                  "UPDATE \#{self.class.table_name} " +
+                  "SET \#{conn.quote_column_name("#{local_key}")} = \#{conn.quote(@#{name}.id)} " +
                   "WHERE id = \#{conn.quote(self.id)}"
                 )
-                self[:#{name}_id] = @#{name}.id             #   self[:version_id] = @version.id
+                self[:#{local_key}] = @#{name}.id           #   self[:version_id] = @version.id
                 changed_attributes.clear                    #   changed_attributes.clear
               end                                           # end
           EOF
 
           methods_module = Module.new
-          methods_module.class_eval(definitions, __FILE__, line + 1)
+          methods_module.class_eval(definitions, __FILE__, line + 2)
           methods_module
         end # module_for_multiple
     end # ClassMethods

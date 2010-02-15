@@ -31,7 +31,7 @@ begin
         t.string  'properties'
         t.integer 'attachment_id'
         t.integer 'number'
-        t.integer 'owner_id'
+        t.integer 'page_id'
         t.integer 'node_id'
         t.timestamps
       end
@@ -45,7 +45,10 @@ begin
   end
 
   ActiveRecord::Base.establish_connection(:adapter=>'sqlite3', :database=>':memory:')
-  ActiveRecord::Migration.verbose = false
-  VersionsMigration.migrate(:up)
-  ActiveRecord::Migration.verbose = true
+  ActiveRecord::Base.logger = Logger.new(File.open(Pathname(__FILE__).dirname + 'test.log', 'wb'))
+  #if !ActiveRecord::Base.connection.table_exists?('pages')
+    ActiveRecord::Migration.verbose = false
+    VersionsMigration.migrate(:up)
+    ActiveRecord::Migration.verbose = true
+  #end
 end

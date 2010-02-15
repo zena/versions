@@ -29,8 +29,25 @@ class AutoTest < Test::Unit::TestCase
         @version = BadVersion.create('title' => 'Socrate')
       end
 
-      should 'raise an exception on update' do
-        assert_raise(NoMethodError) { subject.update_attributes('title' => 'Aristotle') }
+      context 'if changed' do
+        should 'clone on update' do
+          assert_difference('Version.count', 1) do
+            subject.update_attributes('title' => 'Aristotle')
+          end
+
+
+          assert_difference('Version.count', 1) do
+            subject.update_attributes('title' => 'Augustin')
+          end
+        end
+      end
+      
+      context 'if not changed' do
+        should 'not clone on update' do
+          assert_difference('Version.count', 0) do
+            subject.update_attributes('title' => 'Socrate')
+          end
+        end
       end
     end
 
@@ -92,7 +109,7 @@ class AutoTest < Test::Unit::TestCase
           subject.update_attributes('title' => 'Aristotle')
           assert_equal 2, subject.number
 
-          subject.update_attributes('title' => 'Aristotle')
+          subject.update_attributes('title' => 'Kierkegaard')
           assert_equal 3, subject.number
         end
       end

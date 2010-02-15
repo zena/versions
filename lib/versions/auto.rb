@@ -12,7 +12,8 @@ module Versions
     end
 
     def should_clone?
-      raise NoMethodError.new("You should implement 'should_clone?' in your model (return true for a new version, false to update).")
+      # Always clone on update
+      true
     end
 
     # This method provides a hook to alter values after a clone operation (just before save: no validation).
@@ -27,7 +28,7 @@ module Versions
     def prepare_save_or_clone
       if new_record?
         self[:number] = 1
-      elsif should_clone?
+      elsif changed? && should_clone?
         @previous_id = self[:id]
         @previous_number ||= self[:number]
         self[:number] = @previous_number + 1

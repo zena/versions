@@ -1,5 +1,6 @@
 require 'active_record'
-require 'versions/shared_attachment'
+require 'versions/after_commit'
+require 'versions/attachment'
 require 'versions/auto'
 require 'versions/multi'
 require 'versions/transparent'
