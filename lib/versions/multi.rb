@@ -35,8 +35,8 @@ module Versions
         name        = versions.to_s.singularize
         klass       = (options[:class_name] || name.capitalize).constantize
         owner_name  = options[:inverse]     || self.to_s.split('::').last.underscore
-        foreign_key = options[:foreign_key] || "#{owner_name}_id"
-        local_key   = options[:local_key]   || "#{name}_id"
+        foreign_key = (options[:foreign_key] || "#{owner_name}_id").to_s
+        local_key   = (options[:local_key]   || "#{name}_id").to_s
 
         raise TypeError.new("Missing 'number' field in table #{klass.table_name}.") unless klass.column_names.include?('number')
         raise TypeError.new("Missing '#{foreign_key}' in table #{klass.table_name}.") unless klass.column_names.include?(foreign_key)

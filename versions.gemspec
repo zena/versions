@@ -24,16 +24,18 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "lib/versions.rb",
+     "lib/versions/after_commit.rb",
+     "lib/versions/attachment.rb",
      "lib/versions/auto.rb",
      "lib/versions/destroy.rb",
      "lib/versions/multi.rb",
      "lib/versions/shared_attachment.rb",
-     "lib/versions/shared_attachment/attachment.rb",
-     "lib/versions/shared_attachment/owner.rb",
-     "lib/versions/transparent.rb",
      "lib/versions/version.rb",
      "test/fixtures.rb",
+     "test/fixtures/files/bird.jpg",
+     "test/fixtures/files/lake.jpg",
      "test/helper.rb",
+     "test/unit/after_commit_test.rb",
      "test/unit/attachment_test.rb",
      "test/unit/auto_test.rb",
      "test/unit/multi_test.rb",
@@ -49,6 +51,7 @@ Gem::Specification.new do |s|
   s.test_files = [
     "test/fixtures.rb",
      "test/helper.rb",
+     "test/unit/after_commit_test.rb",
      "test/unit/attachment_test.rb",
      "test/unit/auto_test.rb",
      "test/unit/multi_test.rb",
@@ -63,15 +66,18 @@ Gem::Specification.new do |s|
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<property>, [">= 0.8.1"])
+      s.add_development_dependency(%q<activesupport>, [">= 0"])
       s.add_runtime_dependency(%q<activerecord>, [">= 0"])
     else
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<property>, [">= 0.8.1"])
+      s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<activerecord>, [">= 0"])
     end
   else
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<property>, [">= 0.8.1"])
+    s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<activerecord>, [">= 0"])
   end
 end

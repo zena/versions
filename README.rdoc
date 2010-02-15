@@ -26,12 +26,6 @@ model with a "page_id" to link back:
     has_multiple :versions
   end
 
-== Transparent (status: alpha)
-
-Hide versions from outside world (simulate read/writes on the node but
-the actions are done on the version). Uses method_missing to forward
-method calls.
-
 === Properties integration (status: beta)
 
 You can get the same functionality as 'Transparent' by using the Property gem and
@@ -49,7 +43,7 @@ storing properties in the version:
     end
   end
 
-== AfterCommit
+== AfterCommit (status: beta)
 
 Requiring 'versions' adds an 'after_commit' method to your models. The code in the after_commit block
 will only be executed if the top-most transaction succeeds (after the database commit).

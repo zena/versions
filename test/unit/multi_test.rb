@@ -150,4 +150,35 @@ class MultiTest < Test::Unit::TestCase
       assert_equal 3, page.versions.size
     end
   end
+
+  context 'Defining association with custom foreign_key' do
+    should 'not raise an exception if the key exists' do
+      assert_nothing_raised do
+        class Book < ActiveRecord::Base
+          set_table_name :pages
+          include Versions::Multi
+          has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'big_book', :foreign_key => 'node_id'
+          has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => :big_book, :foreign_key => :node_id
+        end
+      end
+    end
+
+    should 'raise an exception if the key does not exist' do
+      assert_raise(TypeError) do
+        class Book < ActiveRecord::Base
+          set_table_name :pages
+          include Versions::Multi
+          has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'big_book', :foreign_key => 'bug_id'
+        end
+      end
+
+      assert_raise(TypeError) do
+        class Book < ActiveRecord::Base
+          set_table_name :pages
+          include Versions::Multi
+          has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => :big_book, :foreign_key => :bug_id
+        end
+      end
+    end
+  end
 end
