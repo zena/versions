@@ -1,3 +1,8 @@
+== 0.2.0
+
+* 1 major enhancement
+  * Changed inverse option from 'as' to 'inverse' in Multi
+
 == 0.1.0 2010-02-14
 
 * 2 major enhancements

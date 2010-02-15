@@ -32,6 +32,7 @@ begin
         t.integer 'attachment_id'
         t.integer 'number'
         t.integer 'owner_id'
+        t.integer 'node_id'
         t.timestamps
       end
 

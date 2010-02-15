@@ -11,7 +11,7 @@ module Versions
       def has_multiple(versions, options = {})
         name       = versions.to_s.singularize
         klass      = (options[:class_name] || name.capitalize).constantize
-        owner_name = options[:as] || 'owner'
+        owner_name = options[:inverse] || 'owner'
 
         raise TypeError.new("Missing 'number' field in table #{klass.table_name}.") unless klass.column_names.include?('number')
         raise TypeError.new("Missing '#{owner_name}_id' in table #{klass.table_name}.") unless klass.column_names.include?("#{owner_name}_id")

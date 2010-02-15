@@ -23,7 +23,7 @@ class MultiTest < Test::Unit::TestCase
     include Versions::Multi
 
     set_table_name :pages
-    has_multiple :foos, :class_name => 'MultiTest::SimpleVersion'
+    has_multiple :foos, :class_name => 'MultiTest::SimpleVersion', :inverse => 'node'
   end
 
   class Version < ActiveRecord::Base
@@ -102,6 +102,11 @@ class MultiTest < Test::Unit::TestCase
       assert !page.update_attributes('foo_attributes' => {'title' => 'fly'})
       assert_equal 'should not contain letter y', page.errors['foo_title']
     end
+
+    should 'find owner back using inverse' do
+      page = SimplePage.create
+      assert_equal page, page.foo.node
+    end
   end
 
   context 'A class with multiple auto versions' do
@@ -111,12 +116,12 @@ class MultiTest < Test::Unit::TestCase
         assert page.update_attributes('version_attributes' => {'title' => 'newTitle'})
       end
     end
-    
+
     should 'mark new version as not dirty after create' do
       page = Page.create
       assert !page.version.changed?
     end
-    
+
     should 'mark new version as not dirty after update' do
       page = Page.create
       assert page.update_attributes('version_attributes' => {'title' => 'Yodle'})
