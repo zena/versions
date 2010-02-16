@@ -77,3 +77,14 @@ and deleted when no more versions are using them. Example:
     store_attachments_in :version, :attachment_class => 'Attachment'
   end
 
+== Testing Gotcha
+
+If you are testing your application with AfterCommit, you should note that the 'after_commit' code will
+*NEVER BE EXECUTED* if you have enabled transactional fixtures. You can fix this by disabling transactional
+fixtures in the tests where you need the after_commit code to execute (save file).
+
+  class DocumentTest < Test::Unit::TestCase
+    self.use_transactional_fixtures = false
+
+    # ...
+  end
