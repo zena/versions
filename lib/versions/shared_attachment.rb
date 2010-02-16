@@ -46,7 +46,11 @@ module Versions
         if data.respond_to?(:rewind)
           data.rewind
         end
-        File.open(path, "wb") { |f| f.syswrite(data.read) }
+        File.open(path, "wb") do |file|
+          while buffer = data.read(2_024_000)
+            file.syswrite(buffer)
+          end
+        end
       end
 
       def remove_file
