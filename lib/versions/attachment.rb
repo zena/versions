@@ -67,11 +67,12 @@ module Versions
           self.attachment = nil
         end
         @attachment_need_save = true
+        @file = file
         self.build_attachment(:file => file)
       end
 
       def file
-        attachment ? attachment.file : nil
+        @file ||= attachment ? attachment.file : nil
       end
 
       def filepath
