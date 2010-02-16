@@ -70,6 +70,10 @@ module Versions
         self.build_attachment(:file => file)
       end
 
+      def file
+        attachment ? attachment.file : nil
+      end
+
       def filepath
         attachment ? attachment.filepath : nil
       end

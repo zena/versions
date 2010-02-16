@@ -41,7 +41,7 @@ class AutoTest < Test::Unit::TestCase
           end
         end
       end
-      
+
       context 'if not changed' do
         should 'not clone on update' do
           assert_difference('Version.count', 0) do

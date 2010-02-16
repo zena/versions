@@ -37,7 +37,6 @@ begin
       end
 
       create_table 'attachments' do |t|
-        t.string 'owner_table'
         t.string 'filename'
         t.timestamps
       end

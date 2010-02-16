@@ -52,6 +52,11 @@ class AttachmentTest < Test::Unit::TestCase
       attachment = Attachment.find(@owner.attachment_id)
       assert_equal @owner.filepath, attachment.filepath
     end
+    
+    should 'restore the file with the database' do
+      attachment = Attachment.find(@owner.attachment_id)
+      assert_equal uploaded_jpg('bird.jpg').read, attachment.file.read
+    end
 
     should 'rename file on bad original_filename' do
       file = uploaded_jpg('bird.jpg')
@@ -117,6 +122,10 @@ class AttachmentTest < Test::Unit::TestCase
       assert File.exist?(@owner.filepath)
       assert_equal uploaded_jpg('lake.jpg').read, File.read(@owner.filepath)
       assert !File.exist?(old_filepath)
+    end
+    
+    should 'get file when sent :file' do
+      assert_equal uploaded_jpg('bird.jpg').read, @owner.file.read
     end
   end
 

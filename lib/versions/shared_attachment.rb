@@ -18,6 +18,10 @@ module Versions
       self[:filename] = get_filename(file)
     end
 
+    def file
+      File.new(filepath)
+    end
+
     def filepath
       @filepath ||= begin digest = ::Digest::SHA1.hexdigest(self[:id].to_s)
         "#{digest[0..0]}/#{digest[1..1]}/#{filename}"

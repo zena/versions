@@ -1,9 +1,14 @@
+== 0.2.1 2010-02-16
+
+* 1 major enhancement
+  * Attachment was not creating the 'file' method
+
 == 0.2.0 2010-02-15
 
 * 1 major enhancement
-  * Changed inverse option from 'as' to 'inverse' in Multi
-  * Implemented the Attachment module
-  * Added AfterCommit module
+  * changed inverse option from 'as' to 'inverse' in Multi
+  * implemented the Attachment module
+  * added AfterCommit module
 
 == 0.1.0 2010-02-14
 
