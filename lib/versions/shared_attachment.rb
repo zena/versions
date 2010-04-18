@@ -7,7 +7,7 @@ module Versions
     after_save    :write_file
 
     def self.filepath(id, filename)
-      digest = ::Digest::SHA1.hexdigest(self[:id].to_s)
+      digest = ::Digest::SHA1.hexdigest(id.to_s)
       "#{digest[0..0]}/#{digest[1..1]}/#{filename}"
     end
 

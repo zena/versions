@@ -112,6 +112,17 @@ class AutoTest < Test::Unit::TestCase
           subject.update_attributes('title' => 'Kierkegaard')
           assert_equal 3, subject.number
         end
+
+        should 'call previous_number to build number' do
+          class << subject
+            def previous_number
+              5
+            end
+          end
+
+          subject.update_attributes('title' => 'Aristotle')
+          assert_equal 6, subject.number
+        end
       end
     end
   end

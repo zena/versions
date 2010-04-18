@@ -84,7 +84,7 @@ class MultiTest < Test::Unit::TestCase
         assert_difference('MultiTest::SimplePage.count', 0) do
           page = SimplePage.new('foo_attributes' => {'title' => 'Fly'})
           assert !page.save
-          assert_contains page.errors.full_messages, 'Foo title should not contain letter y'
+          assert_contains page.errors[:foo_title], 'should not contain letter y'
         end
       end
     end
