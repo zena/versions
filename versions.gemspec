@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{versions}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Gaspard Bucher"]
-  s.date = %q{2010-02-22}
+  s.date = %q{2010-04-18}
   s.description = %q{A list of libraries to work with ActiveRecord model versioning: Auto (duplicate on save), Multi (hide many versions behind a single one), Transparent (hide versions from outside world), Property (define properties on model, store them in versions)}
   s.email = %q{gaspard@teti.ch}
   s.extra_rdoc_files = [
@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://zenadmin.org/650}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{A list of libraries to work with ActiveRecord model versioning}
   s.test_files = [
     "test/fixtures.rb",

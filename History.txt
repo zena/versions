@@ -1,3 +1,9 @@
+== 0.2.2
+
+* 2 minor enhancements:
+  * Moved filepath generation in a class method.
+  * Better validation support (validates_presence_of owner).
+
 == 0.2.1 2010-02-16
 
 * 1 major enhancement

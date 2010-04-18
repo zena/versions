@@ -30,8 +30,7 @@ module Versions
         self[:number] = 1
       elsif changed? && should_clone?
         @previous_id = self[:id]
-        @previous_number ||= self[:number]
-        self[:number] = @previous_number + 1
+        self[:number] = self.previous_number + 1
 
         self[:id] = nil
         self[:created_at] = nil
@@ -47,6 +46,10 @@ module Versions
     def clear_number_counter
       @previous_number = nil
       true
+    end
+
+    def previous_number
+      @previous_number ||= self[:number]
     end
   end # Auto
 end # Versions

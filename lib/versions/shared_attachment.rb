@@ -6,6 +6,11 @@ module Versions
     after_destroy :destroy_file
     after_save    :write_file
 
+    def self.filepath(id, filename)
+      digest = ::Digest::SHA1.hexdigest(self[:id].to_s)
+      "#{digest[0..0]}/#{digest[1..1]}/#{filename}"
+    end
+
     def unlink(model)
       link_count = model.class.count(:conditions => ["attachment_id = ? AND id != ?", self.id, model.id])
       if link_count == 0
@@ -23,9 +28,7 @@ module Versions
     end
 
     def filepath
-      @filepath ||= begin digest = ::Digest::SHA1.hexdigest(self[:id].to_s)
-        "#{digest[0..0]}/#{digest[1..1]}/#{filename}"
-      end
+      @filepath ||= self.class.filepath(self[:id], filename)
     end
 
     private
