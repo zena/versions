@@ -78,7 +78,6 @@ module Versions
 
             private
               def validate_#{name}                          # def validate_version
-                #{name}.#{owner_name} = self if new_record? #   version.owner = self if new_record?
                 unless #{name}.valid?                       #   unless version.valid?
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', version)
                 end                                         #   end
