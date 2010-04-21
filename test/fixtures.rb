@@ -20,7 +20,6 @@ begin
     def self.up
       create_table 'pages' do |t|
         t.integer 'version_id'
-        t.integer 'foo_id'
         t.string  'name'
         t.timestamps
       end

@@ -20,7 +20,16 @@ module Versions
 
     def file=(file)
       @file = file
-      self[:filename] = get_filename(file)
+      self.filename = get_filename(file)
+    end
+    
+    def filename=(name)
+      fname = name.gsub(/[^a-zA-Z\-_0-9\.]/,'')
+      if fname[0..0] == '.'
+        # Forbid names starting with a dot
+        fname = Digest::SHA1.hexdigest(Time.now.to_i.to_s)[0..6]
+      end
+      self[:filename] = fname
     end
 
     def file
@@ -61,13 +70,7 @@ module Versions
       end
 
       def get_filename(file)
-        # make sure name is not corrupted
-        fname = file.original_filename.gsub(/[^a-zA-Z\-_0-9\.]/,'')
-        if fname[0..0] == '.'
-          # Forbid names starting with a dot
-          fname = Digest::SHA1.hexdigest(Time.now.to_i.to_s)[0..6]
-        end
-        fname
+        file.original_filename
       end
   end # SharedAttachment
 end # Versions

@@ -31,8 +31,8 @@ module Versions
       #   local key to get the current page. Note that the local key does not need to live in the database if the model
       #   defines <tt>set_current_[assoc]_before_update</tt> and <tt>set_current_[assoc]_after_create</tt> where '[assoc]'
       #   represents the association name.
-      def has_multiple(versions, options = {})
-        name        = versions.to_s.singularize
+      def has_multiple(association_name, options = {})
+        name        = association_name.to_s.singularize
         klass       = (options[:class_name] || name.capitalize).constantize
         owner_name  = options[:inverse]     || self.to_s.split('::').last.underscore
         foreign_key = (options[:foreign_key] || "#{owner_name}_id").to_s
@@ -41,17 +41,17 @@ module Versions
         raise TypeError.new("Missing 'number' field in table #{klass.table_name}.") unless klass.column_names.include?('number')
         raise TypeError.new("Missing '#{foreign_key}' in table #{klass.table_name}.") unless klass.column_names.include?(foreign_key)
 
-        has_many versions, :order => 'number DESC', :class_name => klass.to_s, :foreign_key => foreign_key, :dependent => :destroy
+        has_many association_name, :order => 'number DESC', :class_name => klass.to_s, :foreign_key => foreign_key, :dependent => :destroy
         validate      :"validate_#{name}"
         after_create  :"save_#{name}_after_create"
         before_update :"save_#{name}_before_update"
 
-        include module_for_multiple(name, klass, owner_name, foreign_key, local_key)
+        include module_for_multiple(name, klass, owner_name, foreign_key, local_key, association_name)
         klass.belongs_to owner_name, :class_name => self.to_s
       end
 
       protected
-        def module_for_multiple(name, klass, owner_name, foreign_key, local_key)
+        def module_for_multiple(name, klass, owner_name, foreign_key, local_key, association_name)
 
           # Eval is ugly, but it's the fastest solution I know of
           line = __LINE__
@@ -84,6 +84,14 @@ module Versions
               end                                           # end
 
               def save_#{name}_before_update                # def save_version_before_update
+                if @#{name}.marked_for_destruction?         #   if @version.marked_for_destruction?
+                  if @#{name}.destroy                       #     if @version.destroy
+                    set_current_#{name}_before_update       #       set_current_version_before_update
+                    return true                             #       return true
+                  else                                      #     else
+                    return false                            #       return false
+                  end                                       #     end
+                end                                         #   end
                 return true if !@#{name}.changed?           #   return true if !@version.changed?
                 @#{name}.#{foreign_key} = self[:id]         #   @version.owner_id = self[:id]
                 if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
@@ -113,7 +121,16 @@ module Versions
               # master record is updated. This method is usually overwritten
               # in the class.
               def set_current_#{name}_before_update         # def set_current_version_before_update
-                self[:#{local_key}] = @#{name}.id           #   self[:version_id] = @version.id
+                if @#{name}.marked_for_destruction?         #   if @version.marked_for_destruction?
+                  if last = #{association_name}.last        #     if last = versions.last
+                    self[:#{local_key}] = last.id           #       self[:version_id] = versions.last.id
+                  else                                      #     else
+                    self[:#{local_key}] = nil               #       self[:version_id] = nil
+                  end                                       #     end
+                  @#{name} = nil                            #     @version = nil
+                else                                        #   else
+                  self[:#{local_key}] = @#{name}.id         #     self[:version_id] = @version.id
+                end                                         #   end
               end                                           # end
 
               # This method is triggered when the version is saved, after the
