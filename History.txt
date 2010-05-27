@@ -1,4 +1,4 @@
-== 0.2.2 2010-05-27
+== 0.3.0 2010-05-27
 
 * 1 major enhancement
   * Added 'destroy' module to destroy with __destroy nested attribute.
