@@ -25,11 +25,11 @@ class AttachmentTest < Test::Unit::TestCase
     set_table_name :pages
 
     def title
-      version.title
+      title
     end
 
     def title=(t)
-      version.title = t
+      title = t
     end
   end
 

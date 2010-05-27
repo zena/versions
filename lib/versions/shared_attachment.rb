@@ -22,7 +22,7 @@ module Versions
       @file = file
       self.filename = get_filename(file)
     end
-    
+
     def filename=(name)
       fname = name.gsub(/[^a-zA-Z\-_0-9\.]/,'')
       if fname[0..0] == '.'
@@ -57,10 +57,15 @@ module Versions
         FileUtils::mkpath(File.dirname(path)) unless File.exist?(File.dirname(path))
         if data.respond_to?(:rewind)
           data.rewind
-        end
-        File.open(path, "wb") do |file|
-          while buffer = data.read(2_024_000)
-            file.syswrite(buffer)
+
+          File.open(path, "wb") do |file|
+            while buffer = data.read(2_024_000)
+              file.syswrite(buffer)
+            end
+          end
+        else
+          File.open(path, "wb") do |file|
+            file.syswrite(data.read)
           end
         end
       end

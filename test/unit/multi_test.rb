@@ -38,8 +38,7 @@ class MultiTest < Test::Unit::TestCase
     has_multiple :versions, :class_name => 'MultiTest::Version'
   end
 
-  context 'A page with multiple simple_versions' do
-
+  context 'Creating a page with versions' do
     should 'accept simple_version nested attributes' do
       assert_nothing_raised { SimplePage.create('name' => 'one', 'simple_version_attributes' => {'title' => 'First'}) }
     end
@@ -109,15 +108,23 @@ class MultiTest < Test::Unit::TestCase
       page.save
       assert_equal 2, page.simple_versions.size
     end
-  end
+  end # Creating a page with versions
 
-  context 'A class with multiple auto versions' do
-    should 'create new versions on update' do
-      page = Page.create
-      assert_difference('Version.count', 1) do
-        assert page.update_attributes('version_attributes' => {'title' => 'newTitle'})
+  context 'A simple page with a version' do
+    subject do
+      p = SimplePage.create('simple_version_attributes' => {'title' => 'Buz'})
+      SimplePage.find(p.id)
+    end
+
+    should 'save without validations' do
+      subject.name = 'hop'
+      assert_difference('SimpleVersion.count', 0) do
+        assert subject.save_with_validation(false)
       end
     end
+  end # A page with a version
+
+  context 'Creating an object with multiple auto versions' do
 
     should 'mark new version as not dirty after create' do
       page = Page.create
@@ -130,34 +137,64 @@ class MultiTest < Test::Unit::TestCase
       assert !page.version.changed?
     end
 
-    should 'find latest version' do
-      page = Page.create
-      v_id = page.version.id
-      assert page.update_attributes('version_attributes' => {'title' => 'newTitle'})
-      assert_not_equal v_id, page.version.id
-    end
-
     should 'not create new versions on update if content did not change' do
       page = Page.create('version_attributes' => {'title' => 'One'})
       assert_difference('Version.count', 0) do
         assert page.update_attributes('version_attributes' => {'title' => 'One'})
       end
     end
+  end
 
-    should 'save master model if version only changed' do
-      page = Page.create('version_attributes' => {'title' => 'One'})
-      assert_difference('Version.count', 1) do
-        assert page.update_attributes('version_attributes' => {'title' => 'Two'})
+  context 'A page' do
+
+    context 'with a version' do
+      subject do
+        p = Page.create('version_attributes' => {'title' => 'Fly'})
+        Page.find(p.id)
+      end
+
+      should 'create new versions on update' do
+        subject # create
+        assert_difference('Version.count', 1) do
+          assert subject.update_attributes('version_attributes' => {'title' => 'newTitle'})
+        end
+      end
+
+      should 'save without validations' do
+        subject.name = 'hop'
+        assert_difference('Version.count', 0) do
+          assert subject.save_with_validation(false)
+        end
+      end
+
+      should 'find latest version' do
+        v_id = subject.version.id
+        assert subject.update_attributes('version_attributes' => {'title' => 'newTitle'})
+        assert_not_equal v_id, subject.version.id
+      end
+
+
+      should 'save master model if version only changed' do
+        subject # create
+        assert_difference('Version.count', 1) do
+          assert subject.update_attributes('version_attributes' => {'title' => 'Two'})
+        end
       end
     end
 
-    should 'list versions' do
-      page = Page.create('version_attributes' => {'title' => 'One'})
-      assert page.update_attributes('version_attributes' => {'title' => 'Two'})
-      assert page.update_attributes('version_attributes' => {'title' => 'Three'})
-      assert_equal 3, page.versions.size
-    end
-  end
+    context 'with many versions' do
+      subject do
+        page = Page.create('version_attributes' => {'title' => 'One'})
+        page.update_attributes('version_attributes' => {'title' => 'Two'})
+        page.update_attributes('version_attributes' => {'title' => 'Three'})
+        page
+      end
+
+      should 'list versions' do
+        assert_equal 3, subject.versions.size
+      end
+    end # with many versions
+  end # A page with a version
 
   context 'Defining association with custom foreign_key' do
     should 'not raise an exception if the key exists' do

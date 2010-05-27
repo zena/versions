@@ -88,7 +88,7 @@ class DestroyTest < Test::Unit::TestCase
       assert subject.update_attributes('version_attributes' => {'__destroy' => true})
 
       assert_not_equal old_version_id, subject.version_id
-      assert_equal 'first', subject.version.title
+      assert_equal 'first', subject.title
     end
   end # A page with a version
 end

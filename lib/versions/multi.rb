@@ -33,8 +33,8 @@ module Versions
       #   represents the association name.
       def has_multiple(association_name, options = {})
         name        = association_name.to_s.singularize
-        klass       = (options[:class_name] || name.capitalize).constantize
-        owner_name  = options[:inverse]     || self.to_s.split('::').last.underscore
+        klass       = (options[:class_name]  || name.capitalize).constantize
+        owner_name  = options[:inverse]      || self.to_s.split('::').last.underscore
         foreign_key = (options[:foreign_key] || "#{owner_name}_id").to_s
         local_key   = (options[:local_key]   || "#{name}_id").to_s
 
@@ -84,6 +84,7 @@ module Versions
               end                                           # end
 
               def save_#{name}_before_update                # def save_version_before_update
+                return true unless @#{name}                 #   return true unless @version
                 if @#{name}.marked_for_destruction?         #   if @version.marked_for_destruction?
                   if @#{name}.destroy                       #     if @version.destroy
                     set_current_#{name}_before_update       #       set_current_version_before_update
