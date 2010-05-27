@@ -43,10 +43,10 @@ begin
   end
 
   ActiveRecord::Base.establish_connection(:adapter=>'sqlite3', :database=>':memory:')
-  ActiveRecord::Base.logger = Logger.new(File.open(Pathname(__FILE__).dirname + 'test.log', 'wb'))
-  #if !ActiveRecord::Base.connection.table_exists?('pages')
-    ActiveRecord::Migration.verbose = false
-    VersionsMigration.migrate(:up)
-    ActiveRecord::Migration.verbose = true
-  #end
+  log_path = Pathname(__FILE__).dirname + '../log/test.log'
+  Dir.mkdir(log_path.dirname) unless File.exist?(log_path.dirname)
+  ActiveRecord::Base.logger = Logger.new(File.open(log_path, 'wb'))
+  ActiveRecord::Migration.verbose = false
+  VersionsMigration.migrate(:up)
+  ActiveRecord::Migration.verbose = true
 end

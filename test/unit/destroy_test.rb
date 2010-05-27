@@ -81,14 +81,14 @@ class DestroyTest < Test::Unit::TestCase
       assert_equal 1, subject.versions.count
       assert_equal 'first', subject.versions.first.title
     end
-    
+
     should 'update current version on destroy' do
       old_version_id = subject.version_id
-      
+
       assert subject.update_attributes('version_attributes' => {'__destroy' => true})
 
       assert_not_equal old_version_id, subject.version_id
-      assert_equal 'first', subject.title
+      assert_equal 'first', subject.version.title
     end
   end # A page with a version
 end
