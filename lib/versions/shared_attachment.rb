@@ -59,9 +59,12 @@ module Versions
           data.rewind
 
           File.open(path, "wb") do |file|
-            while buffer = data.read(2_024_000)
+            begin
+              buffer = data.read(2_024_000)
               file.syswrite(buffer)
-            end
+              # Do not ask me why we need to check with 'blank?' and why
+              # while buffer = data.read(...) is not working (buffer returned is '' sometimes)
+            end while !buffer.blank?
           end
         else
           File.open(path, "wb") do |file|
