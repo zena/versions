@@ -8,7 +8,7 @@ module Versions
 
     def self.filepath(id, filename)
       digest = ::Digest::SHA1.hexdigest(id.to_s)
-      "#{digest[0..0]}/#{digest[1..1]}/#{filename}"
+      "#{digest[0..0]}/#{digest[1..1]}/#{id}-#{filename}"
     end
 
     def unlink(model)

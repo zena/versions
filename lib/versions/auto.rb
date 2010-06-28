@@ -32,7 +32,8 @@ module Versions
         @previous_id = self[:id]
         self[:number] = self.previous_number + 1
 
-        self[:id] = nil
+        # make sure the field is removed so that it does not break DB insert (PostgreSQL)
+        @attributes.delete('id')
         self[:created_at] = nil
         self[:updated_at] = nil
         @new_record = true
