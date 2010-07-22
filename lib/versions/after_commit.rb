@@ -65,5 +65,6 @@ module AfterCommit
   end
 end
 
+raise "AfterCommit required too late, connection already active." if Class.new(ActiveRecord::Base).connected?
 ActiveRecord::ConnectionAdapters::ConnectionPool.send(:include, AfterCommit::Initializer)
 ActiveRecord::Base.send(:include, AfterCommit::ModelMethods)
