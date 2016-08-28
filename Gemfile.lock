@@ -1,0 +1,47 @@
+PATH
+  remote: ../property
+  specs:
+    property (2.3.4)
+      activerecord (~> 2.3)
+
+PATH
+  remote: ../yamltest
+  specs:
+    yamltest (0.9.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activerecord (2.3.18)
+      activesupport (= 2.3.18)
+    activesupport (2.3.18)
+    coderay (1.1.1)
+    json (1.8.3)
+    logger (1.2.8)
+    method_source (0.8.2)
+    pry (0.10.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    rake (10.4.2)
+    rdoc (3.12)
+      json (~> 1.4)
+    shoulda (2.10.3)
+    slop (3.6.0)
+    sqlite3 (1.3.11)
+    yajl-ruby (1.2.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord (= 2.3.18)
+  logger
+  property (= 2.3.4)!
+  pry
+  rake (= 10.4.2)
+  rdoc (= 3.12)
+  shoulda (= 2.10.3)
+  sqlite3 (= 1.3.11)
+  yajl-ruby
+  yamltest (= 0.9.0)!

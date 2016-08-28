@@ -11,6 +11,11 @@ module Versions
       "#{digest[0..0]}/#{digest[1..1]}/#{id}-#{filename}"
     end
 
+    def self.filepath_old(id, filename)
+      digest = ::Digest::SHA1.hexdigest(id.to_s)
+      "#{digest[0..0]}/#{digest[1..1]}/#{filename}"
+    end
+
     def unlink(model)
       link_count = model.class.count(:conditions => ["attachment_id = ? AND id != ?", self.id, model.id])
       if link_count == 0
@@ -36,8 +41,16 @@ module Versions
       File.new(filepath)
     end
 
+    # def filepath
+    #   @filepath ||= self.class.filepath(self[:id], filename)
+    # end
+
     def filepath
-      @filepath ||= self.class.filepath(self[:id], filename)
+      if File.exists?(self.class.filepath_old(self[:id], filename))
+        self.class.filepath_old(self[:id], filename)
+      else
+        self.class.filepath(self[:id], filename)
+      end
     end
 
     private

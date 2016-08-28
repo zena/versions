@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{versions}
-  s.version = "0.3.1"
+  s.version = "0.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Gaspard Bucher"]
-  s.date = %q{2010-06-14}
+  s.authors = ["Gaspard Bucher, Renaud Kern"]
+  s.date = %q{2016-08-28}
   s.description = %q{A list of libraries to work with ActiveRecord model versioning: Auto (duplicate on save), Multi (hide many versions behind a single one), Transparent (hide versions from outside world), Property (define properties on model, store them in versions)}
-  s.email = %q{gaspard@teti.ch}
+  s.email = %q{renaud@teti.ch}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
