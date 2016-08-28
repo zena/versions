@@ -2,7 +2,7 @@ require 'helper'
 
 class MultiTest < Test::Unit::TestCase
   class SimpleVersion < ActiveRecord::Base
-    set_table_name :versions
+    self.table_name = :versions
     validate :title_does_not_contain_letter_x
     before_save :fail_if_title_contains_y
 
@@ -21,19 +21,19 @@ class MultiTest < Test::Unit::TestCase
   end
 
   class SimplePage < ActiveRecord::Base
-    set_table_name :pages
+    self.table_name = :pages
     include Versions::Multi
 
     has_multiple :simple_versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'node', :local_key => 'version_id'
   end
 
   class Version < ActiveRecord::Base
-    set_table_name :versions
+    self.table_name = :versions
     include Versions::Auto
   end
 
   class Page < ActiveRecord::Base
-    set_table_name :pages
+    self.table_name = :pages
     include Versions::Multi
     has_multiple :versions, :class_name => 'MultiTest::Version'
   end
@@ -200,7 +200,7 @@ class MultiTest < Test::Unit::TestCase
     should 'not raise an exception if the key exists' do
       assert_nothing_raised do
         class Book < ActiveRecord::Base
-          set_table_name :pages
+          self.table_name = :pages
           include Versions::Multi
           has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'big_book', :foreign_key => 'node_id'
           has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => :big_book, :foreign_key => :node_id
@@ -211,7 +211,7 @@ class MultiTest < Test::Unit::TestCase
     should 'raise an exception if the key does not exist' do
       assert_raise(TypeError) do
         class Book < ActiveRecord::Base
-          set_table_name :pages
+          self.table_name = :pages
           include Versions::Multi
           has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'big_book', :foreign_key => 'bug_id'
         end
@@ -219,7 +219,7 @@ class MultiTest < Test::Unit::TestCase
 
       assert_raise(TypeError) do
         class Book < ActiveRecord::Base
-          set_table_name :pages
+          self.table_name = :pages
           include Versions::Multi
           has_multiple :versions, :class_name => 'MultiTest::SimpleVersion', :inverse => :big_book, :foreign_key => :bug_id
         end

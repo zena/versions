@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'helper'
 
 class AttachmentTest < Test::Unit::TestCase
@@ -22,7 +23,7 @@ class AttachmentTest < Test::Unit::TestCase
     include Versions::Attachment
     store_attachments_in :version, :class_name => 'AttachmentTest::Version', :attachment_class => 'AttachmentTest::Attachment'
 
-    set_table_name :pages
+    self.table_name = :pages
 
     def title
       version.title
@@ -227,7 +228,7 @@ class AttachmentTest < Test::Unit::TestCase
 
   context 'A module using attachments without versions' do
     class Doc < ActiveRecord::Base
-      set_table_name :versions
+      self.table_name = :versions
       include Versions::Attachment
       store_attachments_in self, :attachment_class => 'AttachmentTest::Attachment'
     end

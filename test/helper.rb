@@ -1,6 +1,6 @@
-require 'rubygems'
 require 'test/unit'
 require 'shoulda'
+require 'logger'
 require 'active_record'
 require 'active_support'
 require 'active_support/testing/assertions'

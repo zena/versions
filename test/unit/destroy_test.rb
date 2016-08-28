@@ -3,7 +3,7 @@ require 'helper'
 class DestroyTest < Test::Unit::TestCase
   class Version < ActiveRecord::Base
     attr_accessor :can_destroy
-    set_table_name :versions
+    self.table_name = :versions
     include Versions::Auto
     include Versions::Destroy
 
@@ -13,20 +13,20 @@ class DestroyTest < Test::Unit::TestCase
   end
 
   class Page < ActiveRecord::Base
-    set_table_name :pages
+    self.table_name = :pages
     include Versions::Multi
     has_multiple :versions, :class_name => 'DestroyTest::Version'
   end
 
   class VersionWithoutCanDestroy < ActiveRecord::Base
     attr_accessor :can_destroy
-    set_table_name :versions
+    self.table_name = :versions
     include Versions::Auto
     include Versions::Destroy
   end
 
   class Page2 < ActiveRecord::Base
-    set_table_name :pages
+    self.table_name = :pages
     include Versions::Multi
     has_multiple :versions, :class_name => 'DestroyTest::VersionWithoutCanDestroy', :foreign_key => 'page_id'
   end

@@ -41,7 +41,8 @@ module Versions
         raise TypeError.new("Missing 'number' field in table #{klass.table_name}.") unless klass.column_names.include?('number')
         raise TypeError.new("Missing '#{foreign_key}' in table #{klass.table_name}.") unless klass.column_names.include?(foreign_key)
 
-        has_many association_name, :order => 'number DESC', :class_name => klass.to_s, :foreign_key => foreign_key, :dependent => :destroy
+        has_many association_name, :order => 'number DESC', :class_name => klass.to_s, 
+                                    :foreign_key => foreign_key, :dependent => :destroy, :autosave => true
         validate      :"validate_#{name}"
         after_create  :"save_#{name}_after_create"
         before_update :"save_#{name}_before_update"
@@ -93,9 +94,10 @@ module Versions
                     return false                            #       return false
                   end                                       #     end
                 end                                         #   end
+                @#{name}.properties_will_change!
                 return true if !@#{name}.changed?           #   return true if !@version.changed?
                 @#{name}.#{foreign_key} = self[:id]         #   @version.owner_id = self[:id]
-                if !@#{name}.save(false)                    #   if !@version.save_with_validation(false)
+                if !@#{name}.save(:validate =>false)        #   if !@version.save(:validate=>false)
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
                   false                                     #     false
                 else                                        #   else
@@ -106,7 +108,7 @@ module Versions
                                                             #
               def save_#{name}_after_create                 # def save_version_after_create
                 @#{name}.#{foreign_key} = self[:id]         #   version.owner_id = self[:id]
-                if !@#{name}.save(false)                    #   if !@version.save(false)
+                if !@#{name}.save(:validate=>false)         #   if !@version.save(:validate=>false)
                   merge_multi_errors('#{name}', @#{name})   #     merge_multi_errors('version', @version)
                   self[:id]   = nil
                   @new_record = true
@@ -140,7 +142,6 @@ module Versions
               def set_current_#{name}_after_create          # def set_current_version_after_create
                 # raw SQL to skip callbacks and validtions  #
                 conn = self.class.connection                #   conn = self.class.connection
-
                 # conn.execute("UPDATE pages SET \#{conn.quote_column_name("version_id")} = \#{conn.quote(@version.id)} WHERE id = \#{conn.quote(self.id)}")
                 conn.execute(
                   "UPDATE \#{self.class.table_name} " +
@@ -161,7 +162,7 @@ module Versions
     private
 
       def merge_multi_errors(name, model)
-        model.errors.each_error do |attribute, message|
+        model.errors.each do |attribute, message|
           attribute = "#{name}_#{attribute}"
           errors.add(attribute, message) unless errors[attribute] # FIXME: rails 3: if errors[attribute].empty?
         end

@@ -3,7 +3,7 @@ require 'helper'
 class AutoTest < Test::Unit::TestCase
 
   class BadVersion < ActiveRecord::Base
-    set_table_name :versions
+    self.table_name = :versions
     include Versions::Auto
   end
 

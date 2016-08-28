@@ -2,7 +2,7 @@ require 'digest'
 
 module Versions
   class SharedAttachment < ::ActiveRecord::Base
-    set_table_name 'attachments'
+    self.table_name = 'attachments'
     after_destroy :destroy_file
     after_save    :write_file
 
