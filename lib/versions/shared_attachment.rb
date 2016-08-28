@@ -42,11 +42,11 @@ module Versions
     end
 
     def filepath
-      @filepath ||= self.class.filepath(self[:id], filename)
+      self.class.filepath(self[:id], filename)
     end
 
     def filepath_old
-      @filepath ||= self.class.filepath_old(self[:id], filename)
+      self.class.filepath_old(self[:id], filename)
     end
 
     # def filepath
