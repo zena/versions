@@ -41,17 +41,21 @@ module Versions
       File.new(filepath)
     end
 
-    # def filepath
-    #   @filepath ||= self.class.filepath(self[:id], filename)
-    # end
-
     def filepath
-      if File.exists?(self.class.filepath_old(self[:id], filename))
-        self.class.filepath_old(self[:id], filename)
-      else
-        self.class.filepath(self[:id], filename)
-      end
+      @filepath ||= self.class.filepath(self[:id], filename)
     end
+
+    def filepath_old
+      @filepath ||= self.class.filepath_old(self[:id], filename)
+    end
+
+    # def filepath
+    #   if File.exists?(self.class.filepath_old(self[:id], filename))
+    #     self.class.filepath_old(self[:id], filename)
+    #   else
+    #     self.class.filepath(self[:id], filename)
+    #   end
+    # end
 
     private
       def write_file
