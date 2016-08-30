@@ -79,6 +79,11 @@ module Versions
         attachment ? attachment.filepath : nil
       end
 
+      def filepath_old
+        attachment ? attachment.filepath_old : nil
+      end
+
+
       private
         def save_attachment
           if @attachment_need_save
