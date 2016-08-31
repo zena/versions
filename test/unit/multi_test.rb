@@ -4,7 +4,7 @@ class MultiTest < Test::Unit::TestCase
   class SimpleVersion < ActiveRecord::Base
     self.table_name = :versions
     validate :title_does_not_contain_letter_x
-    before_save :fail_if_title_contains_y
+    validate :fail_if_title_contains_y
 
     def title_does_not_contain_letter_x
       errors.add('title', 'should not contain letter x') if self[:title].to_s =~ /x/
@@ -25,6 +25,7 @@ class MultiTest < Test::Unit::TestCase
     include Versions::Multi
 
     has_multiple :simple_versions, :class_name => 'MultiTest::SimpleVersion', :inverse => 'node', :local_key => 'version_id'
+
   end
 
   class Version < ActiveRecord::Base
@@ -68,15 +69,16 @@ class MultiTest < Test::Unit::TestCase
 
     should 'merge simple_version errors in model on create' do
       page = SimplePage.create('simple_version_attributes' => {'title' => 'Fox'})
+      assert !page.simple_version.valid?
       assert !page.valid?
-      assert_equal 'should not contain letter x', page.errors['simple_version_title']
+      assert_equal ['should not contain letter x'], page.errors['simple_version_title']
     end
 
     should 'merge simple_version errors in model on update' do
       page = SimplePage.create('simple_version_attributes' => {'title' => 'phone'})
       assert page.valid?
       assert !page.update_attributes('simple_version_attributes' => {'title' => 'fax'})
-      assert_equal 'should not contain letter x', page.errors['simple_version_title']
+      assert_equal ['should not contain letter x'], page.errors['simple_version_title']
     end
 
     should 'rollback if simple_version save fails on create' do
@@ -93,8 +95,9 @@ class MultiTest < Test::Unit::TestCase
     should 'abort if version save fails on update' do
       page = SimplePage.create('simple_version_attributes' => {'title' => 'mosquito'})
       assert page.valid?
-      assert !page.update_attributes('simple_version_attributes' => {'title' => 'fly'})
-      assert_equal 'should not contain letter y', page.errors['simple_version_title']
+      assert_equal 'mosquito', page.simple_version.title
+      page.update_attributes('simple_version_attributes' => {'title' => 'fly'})
+      assert_contains page.errors[:simple_version_title], 'should not contain letter y'
     end
 
     should 'find owner back using inverse' do
@@ -119,7 +122,7 @@ class MultiTest < Test::Unit::TestCase
     should 'save without validations' do
       subject.name = 'hop'
       assert_difference('SimpleVersion.count', 0) do
-        assert subject.save_with_validation(false)
+        assert subject.save(:validate => false)
       end
     end
   end # A page with a version
@@ -139,6 +142,7 @@ class MultiTest < Test::Unit::TestCase
 
     should 'not create new versions on update if content did not change' do
       page = Page.create('version_attributes' => {'title' => 'One'})
+
       assert_difference('Version.count', 0) do
         assert page.update_attributes('version_attributes' => {'title' => 'One'})
       end
@@ -163,7 +167,7 @@ class MultiTest < Test::Unit::TestCase
       should 'save without validations' do
         subject.name = 'hop'
         assert_difference('Version.count', 0) do
-          assert subject.save_with_validation(false)
+          assert subject.save(:validate => false)
         end
       end
 

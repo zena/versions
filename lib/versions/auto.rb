@@ -11,6 +11,11 @@ module Versions
       base.attr_protected :number
     end
 
+    def changed_attributes
+      super.reject! {|k,v| v.nil?}
+      super
+    end
+
     def should_clone?
       # Always clone on update
       true

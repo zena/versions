@@ -47,7 +47,6 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://zenadmin.org/650}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.7}
   s.summary = %q{A list of libraries to work with ActiveRecord model versioning}
   s.test_files = [
     "test/fixtures.rb",
@@ -67,18 +66,18 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<shoulda>, [">= 0"])
-      s.add_development_dependency(%q<property>, [">= 0.8.1"])
+      s.add_development_dependency(%q<property>, [">= 2.3.4"])
       s.add_development_dependency(%q<activesupport>, [">= 0"])
       s.add_runtime_dependency(%q<activerecord>, [">= 0"])
     else
       s.add_dependency(%q<shoulda>, [">= 0"])
-      s.add_dependency(%q<property>, [">= 0.8.1"])
+      s.add_dependency(%q<property>, [">= 2.3.4"])
       s.add_dependency(%q<activesupport>, [">= 0"])
       s.add_dependency(%q<activerecord>, [">= 0"])
     end
   else
     s.add_dependency(%q<shoulda>, [">= 0"])
-    s.add_dependency(%q<property>, [">= 0.8.1"])
+    s.add_dependency(%q<property>, [">= 2.3.4"])
     s.add_dependency(%q<activesupport>, [">= 0"])
     s.add_dependency(%q<activerecord>, [">= 0"])
   end
