@@ -57,6 +57,7 @@ module Versions
           # Eval is ugly, but it's the fastest solution I know of
           line = __LINE__
           definitions = <<-EOF
+
             def #{name}                                     # def version
               @#{name} ||= begin                            #   @version ||= begin
                 if v_id = #{local_key}                      #     if v_id = version_id

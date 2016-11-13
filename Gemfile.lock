@@ -1,15 +1,15 @@
 GIT
   remote: https://github.com/zena/property.git
-  revision: 1eb8fa0dc2b7f733ba306bdd0bf59fd2ad17d013
-  branch: 1.9.3
+  revision: 47d5b2e38e292055f36f74a47d94217668df9fef
+  branch: 2.2.1
   specs:
     property (2.3.4)
       activerecord (~> 3.2)
 
 GIT
   remote: https://github.com/zena/yamltest.git
-  revision: 8a9a9d302848f33c959369d0ed94f8ae7d8df901
-  branch: 1.9.3
+  revision: 5b1e20406376634ac4f8c38d7df42e9f45fd3da7
+  branch: 2.2.1
   specs:
     yamltest (0.9.0)
 
@@ -68,4 +68,4 @@ DEPENDENCIES
   yamltest (= 0.9.0)!
 
 BUNDLED WITH
-   1.13.3
+   1.13.6
